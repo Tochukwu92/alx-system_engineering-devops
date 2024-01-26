@@ -4,8 +4,11 @@
 #In a list format
 #Where only the part of the name after the first dash is displayed
 
-list=$(ls)
-for i in $list
+for file in *
 do
-	echo "$i" | cut -d '_' -f2
+    if [ -f "$file" ]
+then
+        name_part=$(echo "$file" | cut -d'-' -f2-)
+        echo "$name_part"
+    fi
 done
