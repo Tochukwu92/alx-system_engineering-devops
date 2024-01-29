@@ -2,15 +2,14 @@
 
 # displays the PID, along with the process name, of processes whose name contain the word bash
 
-for pid in /proc/[0-9]*
-do
-	if [ -d "$pid" ]
-then
-        	cmd=$(tr -d '\0' < "$pid/cmdline")
-        	if [[ "$cmd" == *"bash"* ]]
-	then
-            		process_name=$(tr -d '\0' < "$pid/stat" | awk '{print $2}')
-            		echo "$pid   $process_name"
-        	fi
-    	fi
+for pid_dir in /proc/[0-9]*; do
+  if [[ -d "$pid_dir" && -f "$pid_dir/cmdline" ]]; then
+    process_name=$(cat "$pid_dir/cmdline" | tr '\0' ' ')
+
+    # Check if the process name contains "bash"
+    if [[ "$process_name" =~ bash ]]; then
+      pid=$(basename "$pid_dir")
+      echo "$pid $process_name"
+    fi
+  fi
 done
