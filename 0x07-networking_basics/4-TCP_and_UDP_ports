@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#displays listening sockets, PID and name
+
+netstat -tulpn
