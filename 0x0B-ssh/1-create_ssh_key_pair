@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ssh-keygen -t "rsa" -i "~/.ssh/" -f "school" -b "4096" -N "betty"
