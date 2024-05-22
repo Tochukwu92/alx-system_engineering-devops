@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 
+
+"""
+fetch all users and their todo tasks
+"""
+
+
 import json
 import requests
 

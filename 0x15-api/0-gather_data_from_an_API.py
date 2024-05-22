@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-import requests
-import sys
 
 """
 fetch userid and todo task
 """
+
+import requests
+import sys
 
 
 if __name__ == "__main__":

@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 
-import csv
-import requests
-import sys
 
 """
 fetch userid users todo task
 """
+
+
+import csv
+import requests
+import sys
 
 
 if __name__ == "__main__":
