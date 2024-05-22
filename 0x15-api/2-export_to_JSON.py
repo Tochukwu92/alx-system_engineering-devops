@@ -4,6 +4,10 @@ import json
 import requests
 import sys
 
+"""
+fetch users id and their todo task
+"""
+
 
 if __name__ == "__main__":
     url = "https://jsonplaceholder.typicode.com/"

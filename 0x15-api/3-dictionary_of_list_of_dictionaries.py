@@ -5,6 +5,10 @@ import requests
 
 
 def fetch_usr_data():
+    """
+    fetch all users and their todo tasks
+    """
+
     url = "https://jsonplaceholder.typicode.com/"
     users = requests.get(url + "users").json()
     Data = {}
