@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+"""Function to query subscribers on a given Reddit subscriber"""
 import requests
 
 
@@ -17,8 +17,11 @@ def number_of_subscribers(subreddit):
 
     if response.status_code != 200:
         return 0
+    try:
 
-    data = response.json()
+        data = response.json().get('data', {})
 
-    result = data['data'].get('subscribers', 0)
-    return result
+        return data.get('subscribers', 0)
+
+    except ValueError:
+        return 0
