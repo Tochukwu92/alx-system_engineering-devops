@@ -1,38 +1,43 @@
 #!/usr/bin/python3
 
-"""Function that return title of all articles of a given subreddit"""
 
 import requests
 
 
 def recurse(subreddit, hot_list=[], after=None):
     """
-    function that queries the Reddit API and returns a
-    list containing the titles of all hot articles for a given subreddit.
+
     """
+    headers = {'User-Agent': 'Reddit Hot Articles Fetcher'}
+
+    #  API request to get hot articles from the subreddit
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
 
-    headers = {'User-Agent': 'Mozilla/5.0'}
-
-    params = {'limit': 100}
-
-    if after:
-        params['after'] = after
+    params = {'limit': 100, 'after': after}
 
     response = requests.get(
-            url, headers=headers, params=params, allow_redirects=False)
+        url, headers=headers, params=params, allow_redirects=False)
 
-    Data = response.json()
+    #  Check if the subreddit is valid
+    if response.status_code != 200:
+        return None
 
-    posts = Data['data']['children']
+    data = response.json().get('data')
 
-    for post in posts:  # loop through the posts list
+    #  If there is no data, return None
+    if not data:
+        return None
 
+    #  Append titles to the hot_list
+    posts = data.get('children', [])
+    for post in posts:
         hot_list.append(post['data']['title'])
 
-    after = Data['data']['after']
-
+    #  Check for pagination (if there's a next page)
+    after = data.get('after')
     if after:
+        #  Recursively call recurse with the next page
         return recurse(subreddit, hot_list, after)
     else:
+        #  If no more pages, return the accumulated list
         return hot_list
