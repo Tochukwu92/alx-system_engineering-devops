@@ -1,60 +1,61 @@
 #!/usr/bin/python3
 
 
-'''Recursive function that querry reddit api'''
+"""Recursive function that querries Reddit API"""
 
 
 import requests
-from collections import Counter
 
 
-def rec_count_words(
-        subreddit, word_list, word_count=Counter(), after=None):
+def count_words(subreddit, word_list, after=None, word_count={}):
     """
 
     """
+    #  Setting the User-Agent to prevent the request from being blocked
+    headers = {'User-Agent': 'Reddit Keyword Counter'}
+
+    #  Make the API request to get the hot posts in the subreddit
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-
-    headers = {'User-Agent': 'Mozilla/5.0'}
-
-    params = {'limit': 10}
-
-    if after:
-        params['after'] = after
-
+    params = {'limit': 100, 'after': after}
     response = requests.get(
             url, headers=headers, params=params, allow_redirects=False)
 
-    dict_obj = response.json()
-
-    posts = dict_obj['data']['children']
-
-    for post in posts:
-        title = post['data']['title']
-        words = title.split()
-        for word in words:
-            normal_wd = word.lower().strip(".!,_?")
-            if normal_wd in word_list:
-                word_count[normal_wd] += 1
-
-    after = dict_obj['data']['after']
-    if after:
-        return rec_count_words(subreddit, word_list, word_count, after)
-    else:
-        return word_count
-
-
-def count_words(subreddit, word_list):
-    '''
-
-    '''
-    word_list = [word.lower() for word in word_list]
-
-    word_count = rec_count_words(subreddit, word_list)
-    if not word_count:
+    #  Check if the subreddit is valid
+    if response.status_code != 200:
         return
 
-    sorted_word_count = sorted(word_count.items(), key=lambda x: (-x[1], x[0]))
+    data = response.json().get('data')
 
-    for word, count in sorted_word_count:
-        print(f"{word}: {count}")
+    #  If there is no data, return
+    if not data:
+        return
+
+    #  Extract the list of posts from the response
+    posts = data.get('children')
+
+    for post in posts:
+        title = post['data']['title'].lower()
+
+        #  Count the occurrences of each keyword in the title
+        for word in word_list:
+            count = title.split().count(word.lower())
+            if count > 0:
+                if word.lower() in word_count:
+                    word_count[word.lower()] += count
+                else:
+                    word_count[word.lower()] = count
+
+    #  Check if there is a next page (pagination)
+    after = data.get('after')
+
+    if after:
+        #  Recursively call the function with the next page
+        return count_words(subreddit, word_list, after, word_count)
+    else:
+        #  Sort the dictionary by value in desc order, then by key in asc order
+        sorted_words = sorted(
+                word_count.items(), key=lambda kv: (-kv[1], kv[0]))
+
+        #  Print the results
+        for word, count in sorted_words:
+            print(f"{word}: {count}")
